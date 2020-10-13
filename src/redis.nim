@@ -1079,7 +1079,10 @@ proc zrevrank*(r: Redis | AsyncRedis, key: string, member: string): Future[Redis
 proc zscore*(r: Redis | AsyncRedis, key: string, member: string): Future[RedisInteger] {.multisync.} =
   ## Get the score associated with the given member in a sorted set
   await r.sendCommand("ZSCORE", key, @[member])
-  result = parseInt(await r.readBulkString())
+  try:
+    result = parseInt(await r.readBulkString())
+  except:
+    result = -1
 
 proc zunionstore*(r: Redis | AsyncRedis, destination: string, numkeys: string,
                  keys: seq[string], weights: seq[string] = @[],
