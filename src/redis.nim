@@ -1082,7 +1082,7 @@ proc zscore*(r: Redis | AsyncRedis, key: string, member: string): Future[RedisIn
   try:
     result = parseInt(await r.readBulkString())
   except:
-    result = -1
+    result = 0
 
 proc zunionstore*(r: Redis | AsyncRedis, destination: string, numkeys: string,
                  keys: seq[string], weights: seq[string] = @[],
