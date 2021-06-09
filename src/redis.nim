@@ -12,8 +12,7 @@
 ## redis-server instance, send commands and receive replies.
 ##
 ## **Beware**: Most (if not all) functions that return a ``RedisString`` may
-## return ``redisNil``, and functions which return a ``RedisList``
-## may return ``nil``.
+## return ``redisNil``.
 ##
 ## Example
 ## --------
@@ -549,8 +548,7 @@ proc bitCount*(r: Redis | AsyncRedis, key: string, limits: seq[string]): Future[
 
 proc bitPos*(r: Redis | AsyncRedis, key: string, bit: int, limits: seq[string]): Future[RedisInteger] {.multisync, gcsafe.} =
   ## Returns position of the first occurence of bit within limits
-  var parameters: seq[string]
-  newSeq(parameters, len(limits) + 1)
+  var parameters = newSeqOfCap[string](len(limits) + 1)
   parameters.add($bit)
   parameters.add(limits)
 
@@ -699,8 +697,7 @@ proc hVals*(r: Redis | AsyncRedis, key: string): Future[RedisList] {.multisync, 
 proc bLPop*(r: Redis | AsyncRedis, keys: seq[string], timeout: int): Future[RedisList] {.multisync, gcsafe.} =
   ## Remove and get the *first* element in a list, or block until
   ## one is available
-  var args: seq[string]
-  newSeq(args, len(keys) + 1)
+  var args = newSeqOfCap[string](len(keys) + 1)
   for i in items(keys):
     args.add(i)
 
@@ -712,8 +709,7 @@ proc bLPop*(r: Redis | AsyncRedis, keys: seq[string], timeout: int): Future[Redi
 proc bRPop*(r: Redis | AsyncRedis, keys: seq[string], timeout: int): Future[RedisList] {.multisync, gcsafe.} =
   ## Remove and get the *last* element in a list, or block until one
   ## is available.
-  var args: seq[string]
-  newSeq(args, len(keys) + 1)
+  var args = newSeqOfCap[string](len(keys) + 1)
   for i in items(keys):
     args.add(i)
 
@@ -942,9 +938,8 @@ proc zinterstore*(r: Redis | AsyncRedis, destination: string, numkeys: string,
                  aggregate: string = ""): Future[RedisInteger] {.multisync, gcsafe.} =
   ## Intersect multiple sorted sets and store the resulting sorted set in
   ## a new key
-  var args: seq[string]
   let argsLen = 2 + len(keys) + (if len(weights) > 0: len(weights) + 1 else: 0) + (if len(aggregate) > 0: 1 + len(aggregate) else: 0)
-  newSeq(args, argsLen)
+  var args = newSeqofCap[string](argsLen)
 
   args.add(destination)
   args.add(numkeys)
@@ -979,8 +974,7 @@ proc zrangebyscore*(r: Redis | AsyncRedis, key: string, min: SomeInteger, max: S
                    withScores: bool = false, limit: bool = false,
                    limitOffset: int = 0, limitCount: int = 0): Future[RedisList] {.multisync, gcsafe.} =
   ## Return a range of members in a sorted set, by score
-  var args: seq[string]
-  newSeq(args, 3 + (if withScores: 1 else: 0) + (if limit: 3 else: 0))
+  var args = newSeqOfCap[string](3 + (if withScores: 1 else: 0) + (if limit: 3 else: 0))
   args.add(key)
   args.add($min)
   args.add($max)
@@ -998,8 +992,7 @@ proc zrangebylex*(r: Redis | AsyncRedis, key: string, start: SomeInteger, stop: 
                   limit: bool = false, limitOffset: int = 0,
                   limitCount: int = 0): Future[RedisList] {.multisync, gcsafe.} =
   ## Return a range of members in a sorted set, ordered lexicographically
-  var args: seq[string]
-  newSeq(args, 3 + (if limit: 3 else: 0))
+  var args = newSeqOfCap[string](3 + (if limit: 3 else: 0))
   args.add(key)
   args.add($start)
   args.add($stop)
@@ -1052,8 +1045,7 @@ proc zrevrangebyscore*(r: Redis | AsyncRedis, key: string, min: SomeInteger, max
                    limitOffset: int = 0, limitCount: int = 0): Future[RedisList] {.multisync, gcsafe.} =
   ## Return a range of members in a sorted set, by score, with
   ## scores ordered from high to low
-  var args: seq[string]
-  newSeq(args, 3 + (if withScores: 1 else: 0) + (if limit: 3 else: 0))
+  var args = newSeqOfCap[string](3 + (if withScores: 1 else: 0) + (if limit: 3 else: 0))
   args.add(key)
   args.add($min)
   args.add($max)
@@ -1088,8 +1080,7 @@ proc zunionstore*(r: Redis | AsyncRedis, destination: string, numkeys: string,
                  keys: seq[string], weights: seq[string] = @[],
                  aggregate: string = ""): Future[RedisInteger] {.multisync, gcsafe.} =
   ## Add multiple sorted sets and store the resulting sorted set in a new key
-  var args: seq[string]
-  newSeq(args, 2 + len(keys) + (if len(weights) > 0: 1 + len(weights) else: 0) + (if len(aggregate) > 0: 1 + len(aggregate) else: 0))
+  var args = newSeqOfCap[string](2 + len(keys) + (if len(weights) > 0: 1 + len(weights) else: 0) + (if len(aggregate) > 0: 1 + len(aggregate) else: 0))
   args.add(destination)
   args.add(numkeys)
 
